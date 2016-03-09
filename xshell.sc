@@ -11,6 +11,10 @@ lcd_current_y  = 0;
 PS2DAT = 0xA004;
 PS2IN  = 0xA005;
 
+// LED
+LEDG=0xA003;
+
+
 void lcd_put_char(c)
 {
     if (lcd_current_x == LCD_MAX_COLUMN) {
@@ -50,6 +54,7 @@ void print_str(str_ptr)
         i++;
     }
 }
+
 
 int keymap[0x1A];
 keymap[0x1C] = 0x61; // 'a'
@@ -103,86 +108,75 @@ int decode_key(key_code)
         return 0;
     }
 
-    if (key_code == PS2_BREAK_CODE) {
-        on_break = 1;
-        return 0;
-    }
-
-    if (key_code == PS2_ENTER) {
-        // '\n'
-        /* return 0x0A; */
-        return 0;
-    } else if (key_code == PS2_ESC) {
-        return 0;
-    } else if (key_code == PS2_BACKSPACE) {
-        /* return 0x5C; */
-        return 0;
-    } else if (key_code == PS2_SPACE) {
-        /* return 0x20; */
-        return 0;
-    } else if (key_code == PS2_TAB) {
-        /* return 0x09; */
-        return 0;
-    }
-
-    if (key_code == 0x1C) return 0x61; // 'a'
-    if (key_code == 0x32) return 0x62; // 'b'
-    if (key_code == 0x21) return 0x63; // 'c'
-    if (key_code == 0x23) return 0x64; // 'd'
-    if (key_code == 0x24) return 0x65; // 'e'
-    if (key_code == 0x2B) return 0x66; // 'f'
-    if (key_code == 0x34) return 0x67; // 'g'
-    if (key_code == 0x33) return 0x68; // 'h'
-    if (key_code == 0x43) return 0x69; // 'i'
-    if (key_code == 0x3B) return 0x6A; // 'j'
-    if (key_code == 0x42) return 0x6B; // 'k'
-    if (key_code == 0x4B) return 0x6C; // 'l'
-    if (key_code == 0x3A) return 0x6D; // 'm'
-    if (key_code == 0x31) return 0x6E; // 'n'
-    if (key_code == 0x44) return 0x6F; // 'o'
-    if (key_code == 0x4D) return 0x70; // 'p'
-    if (key_code == 0x15) return 0x71; // 'q'
-    if (key_code == 0x2D) return 0x72; // 'r'
-    if (key_code == 0x1B) return 0x73; // 's'
-    if (key_code == 0x2C) return 0x74; // 't'
-    if (key_code == 0x3C) return 0x75; // 'u'
-    if (key_code == 0x2A) return 0x76; // 'v'
-    if (key_code == 0x1D) return 0x77; // 'w'
-    if (key_code == 0x22) return 0x78; // 'x'
-    if (key_code == 0x35) return 0x79; // 'y'
-    if (key_code == 0x1A) return 0x7A; // 'z'
+         if (key_code == PS2_BREAK_CODE) { on_break = 1; }
+    else if (key_code == PS2_ENTER)      { return 0x0A; }
+    // else if (key_code == PS2_ESC)     { return 0x00; }
+    else if (key_code == PS2_BACKSPACE) { return 0x5C; }
+    else if (key_code == PS2_SPACE)     { return 0x20; }
+    else if (key_code == PS2_TAB)       { return 0x09; }
+    else if (key_code == 0x1C)          { return 0x61; } // 'a'
+    else if (key_code == 0x32)          { return 0x62; } // 'b'
+    else if (key_code == 0x21)          { return 0x63; } // 'c'
+    else if (key_code == 0x23)          { return 0x64; } // 'd'
+    else if (key_code == 0x24)          { return 0x65; } // 'e'
+    else if (key_code == 0x2B)          { return 0x66; } // 'f'
+    else if (key_code == 0x34)          { return 0x67; } // 'g'
+    else if (key_code == 0x33)          { return 0x68; } // 'h'
+    else if (key_code == 0x43)          { return 0x69; } // 'i'
+    else if (key_code == 0x3B)          { return 0x6A; } // 'j'
+    else if (key_code == 0x42)          { return 0x6B; } // 'k'
+    else if (key_code == 0x4B)          { return 0x6C; } // 'l'
+    else if (key_code == 0x3A)          { return 0x6D; } // 'm'
+    else if (key_code == 0x31)          { return 0x6E; } // 'n'
+    else if (key_code == 0x44)          { return 0x6F; } // 'o'
+    else if (key_code == 0x4D)          { return 0x70; } // 'p'
+    else if (key_code == 0x15)          { return 0x71; } // 'q'
+    else if (key_code == 0x2D)          { return 0x72; } // 'r'
+    else if (key_code == 0x1B)          { return 0x73; } // 's'
+    else if (key_code == 0x2C)          { return 0x74; } // 't'
+    else if (key_code == 0x3C)          { return 0x75; } // 'u'
+    else if (key_code == 0x2A)          { return 0x76; } // 'v'
+    else if (key_code == 0x1D)          { return 0x77; } // 'w'
+    else if (key_code == 0x22)          { return 0x78; } // 'x'
+    else if (key_code == 0x35)          { return 0x79; } // 'y'
+    else if (key_code == 0x1A)          { return 0x7A; } // 'z'
 
     return 0;
 }
 
 
 // Main
-int str[32];
-str[0]  = 0x48;
-str[1]  = 0x45;
-str[2]  = 0x4C;
-str[3]  = 0x4C;
-str[4]  = 0x4F;
-str[5]  = 0x0A;
-str[6]  = 0x57;
-str[7]  = 0x4F;
-str[8]  = 0x52;
-str[9]  = 0x4C;
-str[10] = 0x44;
-str[11] = 0x00;
+void main()
+{
+    int str[32];
+    str[0]  = 0x48;
+    str[1]  = 0x45;
+    str[2]  = 0x4C;
+    str[3]  = 0x4C;
+    str[4]  = 0x4F;
+    str[5]  = 0x0A;
+    str[6]  = 0x57;
+    str[7]  = 0x4F;
+    str[8]  = 0x52;
+    str[9]  = 0x4C;
+    str[10] = 0x44;
+    str[11] = 0x00;
 
-lcd_clear();
-print_str(&str);
+    lcd_clear();
+    print_str(&str);
 
-while (1) {
-    if (*PS2IN) {
-        raw_key_code = *PS2DAT;
-        decoded_key_code = decode_key(raw_key_code);
-        if (decoded_key_code != 0) {
-            lcd_put_char(decoded_key_code);
+    while (1) {
+        if (*PS2IN) {
+            raw_key_code = *PS2DAT;
+            decoded_key_code = decode_key(raw_key_code);
+            if (decoded_key_code != 0) {
+                lcd_put_char(decoded_key_code);
+            }
         }
+        *LEDG = 1;
     }
 }
 
 
+main();
 halt;
