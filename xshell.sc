@@ -7,9 +7,9 @@ int START_MSG[6];
 int TEST_STR1[6];
 int TEST_STR_MSG[7];
 int CMD_PRINT[6];
-int in_buffer[64];
+int in_buffer[2400];
 
-BUFFER_SIZE = 128;
+BUFFER_SIZE = 2400;
 
 START_MSG[0] = 0x53;
 START_MSG[1] = 0x54;
