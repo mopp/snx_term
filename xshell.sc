@@ -66,50 +66,47 @@ PS2_L_ALT      = 0x11;
 PS2_L_CTRL     = 0x14;
 PS2_R_SHIFT    = 0x59;
 PS2_BREAK_CODE = 0xF0;
-on_break       = 0;
+ps2_on_break   = 0;
 int decode_key(key_code)
 {
-    if (key_code == 0xFA) {
+    if (ps2_on_break == 1) {
+        ps2_on_break = 0;
         return 0;
     }
 
-    if (on_break == 1) {
-        on_break = 0;
-        return 0;
-    }
-
-         if (key_code == PS2_BREAK_CODE) { on_break = 1; }
+    if (key_code == 0xFA)                { return 0; }
+    else if (key_code == PS2_BREAK_CODE) { ps2_on_break = 1; }
     else if (key_code == PS2_ENTER)      { return 0x0A; }
-    // else if (key_code == PS2_ESC)     { return 0x00; }
-    else if (key_code == PS2_BACKSPACE) { return 0x5C; }
-    else if (key_code == PS2_SPACE)     { return 0x20; }
-    else if (key_code == PS2_TAB)       { return 0x09; }
-    else if (key_code == 0x1C)          { return 0x61; } // 'a'
-    else if (key_code == 0x32)          { return 0x62; } // 'b'
-    else if (key_code == 0x21)          { return 0x63; } // 'c'
-    else if (key_code == 0x23)          { return 0x64; } // 'd'
-    else if (key_code == 0x24)          { return 0x65; } // 'e'
-    else if (key_code == 0x2B)          { return 0x66; } // 'f'
-    else if (key_code == 0x34)          { return 0x67; } // 'g'
-    else if (key_code == 0x33)          { return 0x68; } // 'h'
-    else if (key_code == 0x43)          { return 0x69; } // 'i'
-    else if (key_code == 0x3B)          { return 0x6A; } // 'j'
-    else if (key_code == 0x42)          { return 0x6B; } // 'k'
-    else if (key_code == 0x4B)          { return 0x6C; } // 'l'
-    else if (key_code == 0x3A)          { return 0x6D; } // 'm'
-    else if (key_code == 0x31)          { return 0x6E; } // 'n'
-    else if (key_code == 0x44)          { return 0x6F; } // 'o'
-    else if (key_code == 0x4D)          { return 0x70; } // 'p'
-    else if (key_code == 0x15)          { return 0x71; } // 'q'
-    else if (key_code == 0x2D)          { return 0x72; } // 'r'
-    else if (key_code == 0x1B)          { return 0x73; } // 's'
-    else if (key_code == 0x2C)          { return 0x74; } // 't'
-    else if (key_code == 0x3C)          { return 0x75; } // 'u'
-    else if (key_code == 0x2A)          { return 0x76; } // 'v'
-    else if (key_code == 0x1D)          { return 0x77; } // 'w'
-    else if (key_code == 0x22)          { return 0x78; } // 'x'
-    else if (key_code == 0x35)          { return 0x79; } // 'y'
-    else if (key_code == 0x1A)          { return 0x7A; } // 'z'
+    else if (key_code == PS2_ESC)        { return 0x00; }
+    else if (key_code == PS2_BACKSPACE)  { return 0x5C; }
+    else if (key_code == PS2_SPACE)      { return 0x20; }
+    else if (key_code == PS2_TAB)        { return 0x09; }
+    else if (key_code == 0x1C)           { return 0x61; } // 'a'
+    else if (key_code == 0x32)           { return 0x62; } // 'b'
+    else if (key_code == 0x21)           { return 0x63; } // 'c'
+    else if (key_code == 0x23)           { return 0x64; } // 'd'
+    else if (key_code == 0x24)           { return 0x65; } // 'e'
+    else if (key_code == 0x2B)           { return 0x66; } // 'f'
+    else if (key_code == 0x34)           { return 0x67; } // 'g'
+    else if (key_code == 0x33)           { return 0x68; } // 'h'
+    else if (key_code == 0x43)           { return 0x69; } // 'i'
+    else if (key_code == 0x3B)           { return 0x6A; } // 'j'
+    else if (key_code == 0x42)           { return 0x6B; } // 'k'
+    else if (key_code == 0x4B)           { return 0x6C; } // 'l'
+    else if (key_code == 0x3A)           { return 0x6D; } // 'm'
+    else if (key_code == 0x31)           { return 0x6E; } // 'n'
+    else if (key_code == 0x44)           { return 0x6F; } // 'o'
+    else if (key_code == 0x4D)           { return 0x70; } // 'p'
+    else if (key_code == 0x15)           { return 0x71; } // 'q'
+    else if (key_code == 0x2D)           { return 0x72; } // 'r'
+    else if (key_code == 0x1B)           { return 0x73; } // 's'
+    else if (key_code == 0x2C)           { return 0x74; } // 't'
+    else if (key_code == 0x3C)           { return 0x75; } // 'u'
+    else if (key_code == 0x2A)           { return 0x76; } // 'v'
+    else if (key_code == 0x1D)           { return 0x77; } // 'w'
+    else if (key_code == 0x22)           { return 0x78; } // 'x'
+    else if (key_code == 0x35)           { return 0x79; } // 'y'
+    else if (key_code == 0x1A)           { return 0x7A; } // 'z'
 
     return 0;
 }
