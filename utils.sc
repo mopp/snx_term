@@ -35,25 +35,27 @@ int strcmp(s1_ptr, s2_ptr)
 }
 
 
-int strncmp(s1_ptr, s2_ptr, str_len)
+int strncmp(ncp1_ptr, ncp2_ptr, ncp_len)
 {
     while (1) {
-        if (*s1_ptr != *s2_ptr) {
+        if (*ncp1_ptr != *ncp2_ptr) {
             break;
-        } else if (*s1_ptr == 0x00) {
+        } else if (*ncp1_ptr == 0x00) {
             break;
-        } else if (*s2_ptr == 0x00) {
-            break;
-        } else if (str_len == 0) {
+        } else if (*ncp2_ptr == 0x00) {
             break;
         }
 
-        s1_ptr++;
-        s2_ptr++;
-        str_len--;
+        ncp_len--;
+        if (ncp_len == 0) {
+            break;
+        }
+
+        ncp1_ptr++;
+        ncp2_ptr++;
     }
 
-    return *s1_ptr - *s2_ptr;
+    return *ncp1_ptr - *ncp2_ptr;
 }
 
 
