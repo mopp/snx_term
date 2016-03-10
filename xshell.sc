@@ -191,25 +191,42 @@ int getchar()
 // Main
 void main()
 {
-    int msg[6];
+    int msg[7];
     msg[0] = 0x53;
     msg[1] = 0x54;
     msg[2] = 0x41;
     msg[3] = 0x52;
     msg[4] = 0x54;
-    msg[5] = 0x00;
+    msg[5] = 0x0A;
+    msg[6] = 0x00;
 
+    int buffer[256];
+
+    // Initialize.
     lcd_clear();
+    led_set(0x00, 0xFF);
     print_str(&msg);
-
-    led_set(0x55, 0xFF);
 
     while (1) {
         input_char = getchar();
+        if (input_char == 0x1B) {
+            // If ESC is passed, restart break to restart main routine.
+            break;
+        }
+
+        // Print to LED.
+        led_set(input_char, 0xFF);
+
+        // Make char upper case.
+        input_char = input_char - 0x20;
+
         lcd_put_char(input_char);
     }
 }
 
+
 do_tests();
-main();
+while (1) {
+    main();
+}
 halt;
