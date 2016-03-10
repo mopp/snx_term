@@ -72,8 +72,8 @@ void do_tests()
     cnt = cnt + test_eq(div(45, 5), 9);
 
     if (cnt != 0) {
-        lcd_clear();
-        print_str(&msg);
+        clear();
+        print_str(&TEST_STR_MSG);
 
         halt;
     }
@@ -127,6 +127,13 @@ void lcd_clear()
     for (idx = 0; idx < (LCD_MAX_ROW * LCD_MAX_COLUMN); idx++) {
         *(LCD + idx) = 0x20;
     }
+}
+
+
+void clear()
+{
+    vga_clear();
+    lcd_clear();
 }
 
 
@@ -254,8 +261,7 @@ void main()
 
     // Initialize.
     led_set(0x00, 0xFF);
-    lcd_clear();
-    vga_clear();
+    clear();
     println_str(&START_MSG);
 
     while (1) {
