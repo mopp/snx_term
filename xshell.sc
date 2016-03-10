@@ -176,6 +176,9 @@ void do_tests()
     cnt = cnt + test_eq(modulo(10, 2), 0);
     cnt = cnt + test_eq(modulo(10, 3), 1);
     cnt = cnt + test_eq(modulo(200, 7), 4);
+    cnt = cnt + test_eq(div(4, 4), 1);
+    cnt = cnt + test_eq(div(12, 4), 3);
+    cnt = cnt + test_eq(div(45, 5), 9);
 
     if (cnt != 0) {
         lcd_clear();

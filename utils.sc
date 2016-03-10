@@ -1,6 +1,6 @@
 LEDG = 0xA003;  // LED
 
-int xor (xor_p, xor_q)
+int xor(xor_p, xor_q)
 {
     return (xor_p | xor_q) & ~(xor_p & xor_q);
 }
@@ -89,4 +89,16 @@ int test_neq(test_n_x, test_n_y)
     }
 
     return 1;
+}
+
+
+int div(n_div, d_div)
+{
+    q_div = 0;
+    while(d_div <= n_div) {
+        q_div++;
+        n_div = n_div - d_div;
+    }
+
+    return q_div;
 }
