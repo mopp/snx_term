@@ -18,7 +18,15 @@ int led_set(led_pattern, led_mask)
 
 int strcmp(s1_ptr, s2_ptr)
 {
-    while ((*s1_ptr == *s2_ptr) && (*s1_ptr != 0) && (*s2_ptr != 0)) {
+    while (1) {
+        if (*s1_ptr != *s2_ptr) {
+            break;
+        } else if (*s1_ptr == 0x00) {
+            break;
+        } else if (*s2_ptr == 0x00) {
+            break;
+        }
+
         s1_ptr++;
         s2_ptr++;
     }
