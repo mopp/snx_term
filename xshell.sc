@@ -225,14 +225,13 @@ int execute(buf_ptr, cmd_ptr)
 
 
 // Main
-int START_MSG[7];
+int START_MSG[6];
 START_MSG[0] = 0x53;
 START_MSG[1] = 0x54;
 START_MSG[2] = 0x41;
 START_MSG[3] = 0x52;
 START_MSG[4] = 0x54;
-START_MSG[5] = 0x0A;
-START_MSG[6] = 0x00;
+START_MSG[5] = 0x00;
 
 int in_buffer[129];
 
@@ -250,7 +249,7 @@ void main()
     // Initialize.
     led_set(0x00, 0xFF);
     lcd_clear();
-    print_str(&START_MSG);
+    println_str(&START_MSG);
 
     while (1) {
         input_char = getchar();
