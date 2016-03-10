@@ -88,6 +88,20 @@ int strlen(ptr_strlen)
 }
 
 
+int strchr(ptr_strchr, ch_strchr)
+{
+    while (*ptr_strchr != 0x00) {
+        if (*ptr_strchr == ch_strchr) {
+            return ptr_strchr;
+        }
+
+        ptr_strchr++;
+    }
+
+    return 0;
+}
+
+
 int atoi(ptr_atoi)
 {
     int len;
