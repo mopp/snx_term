@@ -1,8 +1,23 @@
 LEDG = 0xA003;  // LED
 
-int xor(xor_p, xor_q)
+
+int test_eq(test_x, test_y)
 {
-    return (xor_p | xor_q) & ~(xor_p & xor_q);
+    if (test_x == test_y) {
+        return 0;
+    }
+
+    return 1;
+}
+
+
+int test_neq(test_n_x, test_n_y)
+{
+    if (test_eq(test_n_x, test_n_y) == 1) {
+        return 0;
+    }
+
+    return 1;
 }
 
 
@@ -59,6 +74,12 @@ int strncmp(ncp1_ptr, ncp2_ptr, ncp_len)
 }
 
 
+int xor(xor_p, xor_q)
+{
+    return (xor_p | xor_q) & ~(xor_p & xor_q);
+}
+
+
 int modulo(x_modul, y_modul)
 {
     while (1) {
@@ -69,26 +90,6 @@ int modulo(x_modul, y_modul)
     }
 
     return x_modul;
-}
-
-
-int test_eq(test_x, test_y)
-{
-    if (test_x == test_y) {
-        return 0;
-    }
-
-    return 1;
-}
-
-
-int test_neq(test_n_x, test_n_y)
-{
-    if (test_eq(test_n_x, test_n_y) == 1) {
-        return 0;
-    }
-
-    return 1;
 }
 
 
