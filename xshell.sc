@@ -64,6 +64,8 @@ void do_tests()
     cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 1), 0);
     cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 2), 0);
     cnt = cnt + test_neq(strncmp(&TEST_STR1, &TEST_STR_MSG, 2), 0);
+    cnt = cnt + test_eq(strlen(&TEST_STR1), 5);
+    cnt = cnt + test_eq(strlen(&START_MSG), 5);
     cnt = cnt + test_eq(modulo(10, 2), 0);
     cnt = cnt + test_eq(modulo(10, 3), 1);
     cnt = cnt + test_eq(modulo(200, 7), 4);

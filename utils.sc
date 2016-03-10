@@ -77,6 +77,20 @@ int strncmp(ncp1_ptr, ncp2_ptr, ncp_len)
 }
 
 
+int strlen(str_ptr)
+{
+    int cnt;
+
+    cnt = 0;
+    while (*str_ptr != 0x00) {
+        cnt++;
+        str_ptr++;
+    }
+
+    return cnt;
+}
+
+
 int xor(xor_p, xor_q)
 {
     return (xor_p | xor_q) & ~(xor_p & xor_q);
