@@ -1,20 +1,30 @@
-// Peripheral addr.
-LCD = 0xA020;
+// Peripheral addrs.
+LCD    = 0xA020; // LCD
+PS2DAT = 0xA004; // PS2
+PS2IN  = 0xA005;
+LEDG   = 0xA003; // LED
 
-// LCD
+
+int xor(xor_p, xor_q)
+{
+    return (xor_p | xor_q) & ~(xor_p & xor_q);
+}
+
+
+int led_set(led_pattern, led_mask)
+{
+    current_bits = *LEDG;
+    changed_bit = (xor(current_bits, led_mask) | ~xor(led_pattern, led_mask));
+    *LEDG = changed_bit;
+
+    return changed_bit;
+}
+
+
 LCD_MAX_COLUMN = 16;
 LCD_MAX_ROW    = 2;
 lcd_current_x  = 0;
 lcd_current_y  = 0;
-
-// PS2
-PS2DAT = 0xA004;
-PS2IN  = 0xA005;
-
-// LED
-LEDG=0xA003;
-
-
 void lcd_put_char(c)
 {
     if (lcd_current_x == LCD_MAX_COLUMN) {
@@ -55,34 +65,6 @@ void print_str(str_ptr)
     }
 }
 
-
-int keymap[0x1A];
-keymap[0x1C] = 0x61; // 'a'
-keymap[0x32] = 0x62; // 'b'
-keymap[0x21] = 0x63; // 'c'
-keymap[0x23] = 0x64; // 'd'
-keymap[0x24] = 0x65; // 'e'
-keymap[0x2B] = 0x66; // 'f'
-keymap[0x34] = 0x67; // 'g'
-keymap[0x33] = 0x68; // 'h'
-keymap[0x43] = 0x69; // 'i'
-keymap[0x3B] = 0x6A; // 'j'
-keymap[0x42] = 0x6B; // 'k'
-keymap[0x4B] = 0x6C; // 'l'
-keymap[0x3A] = 0x6D; // 'm'
-keymap[0x31] = 0x6E; // 'n'
-keymap[0x44] = 0x6F; // 'o'
-keymap[0x4D] = 0x70; // 'p'
-keymap[0x15] = 0x71; // 'q'
-keymap[0x2D] = 0x72; // 'r'
-keymap[0x1B] = 0x73; // 's'
-keymap[0x2C] = 0x74; // 't'
-keymap[0x3C] = 0x75; // 'u'
-keymap[0x2A] = 0x76; // 'v'
-keymap[0x1D] = 0x77; // 'w'
-keymap[0x22] = 0x78; // 'x'
-keymap[0x35] = 0x79; // 'y'
-keymap[0x1A] = 0x7A; // 'z'
 
 PS2_BREAK_CODE = 0xf0;
 PS2_ENTER      = 0x5A;
@@ -145,6 +127,17 @@ int decode_key(key_code)
 }
 
 
+int strcmp(s1_ptr, s2_ptr)
+{
+    while ((*s1_ptr != *s2_ptr) || (*s1_ptr == 0) || (*s2_ptr == 0)) {
+        s1_ptr++;
+        s2_ptr++;
+    }
+
+    return *ss1 - *ss2;
+}
+
+
 // Main
 void main()
 {
@@ -165,6 +158,12 @@ void main()
     lcd_clear();
     print_str(&str);
 
+    led_set(0xFF, 0x11);
+
+    if (strcmp(&str, &str) == 0) {
+        led_set(0xFF, 0x80);
+    }
+
     while (1) {
         if (*PS2IN) {
             raw_key_code = *PS2DAT;
@@ -173,10 +172,11 @@ void main()
                 lcd_put_char(decoded_key_code);
             }
         }
-        *LEDG = 1;
     }
 }
 
 
 main();
 halt;
+
+
