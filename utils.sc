@@ -23,6 +23,9 @@ int test_neq(test_n_x, test_n_y)
 
 int led_set(led_pattern, led_mask)
 {
+    int current_bits;
+    int changed_bits;
+
     current_bits = *LEDG;
     changed_bits = ((current_bits & ~led_mask) | (led_pattern & led_mask));
     *LEDG = changed_bits;
@@ -95,6 +98,8 @@ int modulo(x_modul, y_modul)
 
 int div(n_div, d_div)
 {
+    int q_div;
+
     q_div = 0;
     while(d_div <= n_div) {
         q_div++;
