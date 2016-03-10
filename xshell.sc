@@ -14,10 +14,10 @@ int xor(xor_p, xor_q)
 int led_set(led_pattern, led_mask)
 {
     current_bits = *LEDG;
-    changed_bit = (xor(current_bits, led_mask) | ~xor(led_pattern, led_mask));
-    *LEDG = changed_bit;
+    changed_bits = ((current_bits & ~led_mask) | (led_pattern & led_mask));
+    *LEDG        = changed_bits;
 
-    return changed_bit;
+    return changed_bits;
 }
 
 
@@ -129,12 +129,12 @@ int decode_key(key_code)
 
 int strcmp(s1_ptr, s2_ptr)
 {
-    while ((*s1_ptr != *s2_ptr) || (*s1_ptr == 0) || (*s2_ptr == 0)) {
+    while ((*s1_ptr == *s2_ptr) && (*s1_ptr != 0) && (*s2_ptr != 0)) {
         s1_ptr++;
         s2_ptr++;
     }
 
-    return *ss1 - *ss2;
+    return *s1_ptr - *s2_ptr;
 }
 
 
@@ -158,10 +158,16 @@ void main()
     lcd_clear();
     print_str(&str);
 
-    led_set(0xFF, 0x11);
+    led_set(0x00, 0xFF);
 
     if (strcmp(&str, &str) == 0) {
-        led_set(0xFF, 0x80);
+        led_set(0x03, 0x03);
+    }
+
+    tmp = &str;
+    tmp++;
+    if (strcmp(&str, tmp) != 0) {
+        led_set(0x02, 0x03);
     }
 
     while (1) {
