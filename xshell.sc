@@ -1,6 +1,5 @@
 // SN/X Shell
-#include "display_vga.sc"
-#include "utils.sc"
+// Note: Global variables should be at the head (maybe).
 
 // ==================== Global variables ====================
 int START_MSG[6];
@@ -8,6 +7,7 @@ int TEST_STR1[6];
 int TEST_STR2[5];
 int TEST_STR_MSG[7];
 int CMD_PRINT[6];
+int CMD_NONE[18];
 int in_buffer[2400];
 
 BUFFER_SIZE = 2400;
@@ -46,6 +46,25 @@ CMD_PRINT[3] = 0x4e;
 CMD_PRINT[4] = 0x54;
 CMD_PRINT[5] = 0x00;
 
+CMD_NONE[0] = 0x2a;
+CMD_NONE[1] = 0x49;
+CMD_NONE[2] = 0x4e;
+CMD_NONE[3] = 0x56;
+CMD_NONE[4] = 0x41;
+CMD_NONE[5] = 0x4c;
+CMD_NONE[6] = 0x49;
+CMD_NONE[7] = 0x44;
+CMD_NONE[8] = 0x20;
+CMD_NONE[9] = 0x43;
+CMD_NONE[10] = 0x4f;
+CMD_NONE[11] = 0x4d;
+CMD_NONE[12] = 0x4d;
+CMD_NONE[13] = 0x41;
+CMD_NONE[14] = 0x4e;
+CMD_NONE[15] = 0x44;
+CMD_NONE[16] = 0x2a;
+CMD_NONE[17] = 0x00;
+
 // Peripheral addrs.
 LCD    = 0xA020;     // LCD
 PS2DAT = 0xA004;  // PS2
@@ -58,6 +77,10 @@ lcd_current_x  = 0;
 lcd_current_y  = 0;
 
 ps2_on_break = 0;
+
+// ==================== Global variables ====================
+#include "display_vga.sc"
+#include "utils.sc"
 
 
 // ==================== Functions ====================
@@ -253,7 +276,8 @@ int execute(buf_ptr, cmd_ptr)
     if (strncmp(cmd_ptr, &CMD_PRINT, 5) == 0) {
         arg_ptr = cmd_ptr + 6;
         println_str(arg_ptr);
-        led_set(0x02, 0xFF);
+    } else {
+        println_str(&CMD_NONE);
     }
 
     return 1;
