@@ -35,6 +35,28 @@ int strcmp(s1_ptr, s2_ptr)
 }
 
 
+int strncmp(s1_ptr, s2_ptr, str_len)
+{
+    while (1) {
+        if (*s1_ptr != *s2_ptr) {
+            break;
+        } else if (*s1_ptr == 0x00) {
+            break;
+        } else if (*s2_ptr == 0x00) {
+            break;
+        } else if (str_len == 0) {
+            break;
+        }
+
+        s1_ptr++;
+        s2_ptr++;
+        str_len--;
+    }
+
+    return *s1_ptr - *s2_ptr;
+}
+
+
 int test_eq(test_x, test_y)
 {
     if (test_x == test_y) {

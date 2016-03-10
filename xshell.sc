@@ -164,6 +164,9 @@ void do_tests()
     cnt = 0;
     cnt = cnt + test_eq(strcmp(&str1, &str1), 0);
     cnt = cnt + test_neq(strcmp(&str1, &msg), 0);
+    cnt = cnt + test_eq(strncmp(&str1, &str1, 1), 0);
+    cnt = cnt + test_eq(strncmp(&str1, &str1, 2), 0);
+    cnt = cnt + test_neq(strncmp(&str1, &msg, 2), 0);
 
     if (cnt != 0) {
         lcd_clear();
