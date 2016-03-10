@@ -1,25 +1,9 @@
+#include "utils.sc"
+
 // Peripheral addrs.
 LCD    = 0xA020; // LCD
 PS2DAT = 0xA004; // PS2
 PS2IN  = 0xA005;
-LEDG   = 0xA003; // LED
-
-
-int xor(xor_p, xor_q)
-{
-    return (xor_p | xor_q) & ~(xor_p & xor_q);
-}
-
-
-int led_set(led_pattern, led_mask)
-{
-    current_bits = *LEDG;
-    changed_bits = ((current_bits & ~led_mask) | (led_pattern & led_mask));
-    *LEDG        = changed_bits;
-
-    return changed_bits;
-}
-
 
 LCD_MAX_COLUMN = 16;
 LCD_MAX_ROW    = 2;
@@ -127,17 +111,6 @@ int decode_key(key_code)
 }
 
 
-int strcmp(s1_ptr, s2_ptr)
-{
-    while ((*s1_ptr == *s2_ptr) && (*s1_ptr != 0) && (*s2_ptr != 0)) {
-        s1_ptr++;
-        s2_ptr++;
-    }
-
-    return *s1_ptr - *s2_ptr;
-}
-
-
 // Main
 void main()
 {
@@ -184,5 +157,3 @@ void main()
 
 main();
 halt;
-
-
