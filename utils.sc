@@ -1,6 +1,6 @@
-LEDG   = 0xA003; // LED
+LEDG = 0xA003;  // LED
 
-int xor(xor_p, xor_q)
+int xor (xor_p, xor_q)
 {
     return (xor_p | xor_q) & ~(xor_p & xor_q);
 }
@@ -10,7 +10,7 @@ int led_set(led_pattern, led_mask)
 {
     current_bits = *LEDG;
     changed_bits = ((current_bits & ~led_mask) | (led_pattern & led_mask));
-    *LEDG        = changed_bits;
+    *LEDG = changed_bits;
 
     return changed_bits;
 }
@@ -32,4 +32,24 @@ int strcmp(s1_ptr, s2_ptr)
     }
 
     return *s1_ptr - *s2_ptr;
+}
+
+
+int test_eq(test_x, test_y)
+{
+    if (test_x == test_y) {
+        return 0;
+    }
+
+    return 1;
+}
+
+
+int test_neq(test_n_x, test_n_y)
+{
+    if (test_eq(test_n_x, test_n_y) == 1) {
+        return 0;
+    }
+
+    return 1;
 }

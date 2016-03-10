@@ -1,9 +1,11 @@
+// SN/X Shell
 #include "utils.sc"
 
 // Peripheral addrs.
 LCD    = 0xA020; // LCD
 PS2DAT = 0xA004; // PS2
 PS2IN  = 0xA005;
+
 
 LCD_MAX_COLUMN = 16;
 LCD_MAX_ROW    = 2;
@@ -113,6 +115,38 @@ int decode_key(key_code)
 }
 
 
+void do_tests()
+{
+    int str1[6];
+    str1[0] = 0x48;
+    str1[1] = 0x45;
+    str1[2] = 0x4C;
+    str1[3] = 0x4C;
+    str1[4] = 0x4F;
+    str1[5] = 0x00;
+
+    int msg[7];
+    msg[0] = 0x46;
+    msg[1] = 0x41;
+    msg[2] = 0x49;
+    msg[3] = 0x4c;
+    msg[4] = 0x45;
+    msg[5] = 0x44;
+    msg[6] = 0x00;
+
+    cnt = 0;
+    cnt = cnt + test_eq(strcmp(&str1, &str1), 0);
+    cnt = cnt + test_neq(strcmp(&str1, &msg), 0);
+
+    if (cnt != 0) {
+        lcd_clear();
+        print_str(&msg);
+
+        halt;
+    }
+}
+
+
 // Main
 void main()
 {
@@ -133,17 +167,7 @@ void main()
     lcd_clear();
     print_str(&str);
 
-    led_set(0x00, 0xFF);
-
-    if (strcmp(&str, &str) == 0) {
-        led_set(0x03, 0x03);
-    }
-
-    tmp = &str;
-    tmp++;
-    if (strcmp(&str, tmp) != 0) {
-        led_set(0x02, 0x03);
-    }
+    led_set(0xFF, 0xFF);
 
     while (1) {
         if (*PS2IN) {
@@ -156,6 +180,6 @@ void main()
     }
 }
 
-
+do_tests();
 main();
 halt;
