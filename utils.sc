@@ -102,6 +102,19 @@ int strchr(ptr_strchr, ch_strchr)
 }
 
 
+int is_number_str(ptr_numstr)
+{
+    while (*ptr_numstr != 0x00) {
+        if ((*ptr_numstr < 0x30) || 0x39 < (*ptr_numstr)) {
+            return 0;
+        }
+        ptr_numstr++;
+    }
+
+    return 1;
+}
+
+
 int atoi(ptr_atoi)
 {
     int len;
@@ -152,4 +165,38 @@ int div(n_div, d_div)
     }
 
     return q_div;
+}
+
+
+int itoa(num_itoa, ptr_itoa)
+{
+    int i;
+    int j;
+    int len;
+    int tmp;
+
+    i = 0;
+    while (1) {
+        *(ptr_itoa + i) = modulo(num_itoa, 10) + 0x30;
+        i++;
+        num_itoa = div(num_itoa, 10);
+        if (num_itoa == 0) {
+            break;
+        }
+    }
+    *(ptr_itoa + i) = 0x00;
+
+    len = strlen(ptr_itoa);
+
+    i = 0;
+    j = len - 1;
+    while (i < j) {
+        tmp = *(ptr_itoa + i);
+        *(ptr_itoa + i) = *(ptr_itoa + j);
+        *(ptr_itoa + j) = tmp;
+        i++;
+        j--;
+    }
+
+    return ptr_itoa;
 }
