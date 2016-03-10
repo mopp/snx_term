@@ -32,6 +32,8 @@ void lcd_put_char(c)
 
 void lcd_clear()
 {
+    lcd_current_x = 0;
+    lcd_current_y = 0;
     for (i = 0; i < (LCD_MAX_ROW * LCD_MAX_COLUMN); i++) {
         *(LCD + i) = 0x20;
     }
