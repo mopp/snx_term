@@ -54,7 +54,6 @@ ps2_on_break = 0;
 
 
 // ==================== Functions ====================
-
 void do_tests()
 {
     int cnt;
@@ -79,6 +78,7 @@ void do_tests()
         halt;
     }
 }
+
 
 void lcd_putchar(ch)
 {
@@ -132,7 +132,7 @@ void lcd_clear()
 
 void putchar(ch)
 {
-    vga_put_char(ch);
+    vga_putchar(ch);
 }
 
 
