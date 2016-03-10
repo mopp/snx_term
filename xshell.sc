@@ -92,7 +92,7 @@ int decode_key(key_code)
     if (key_code == 0xFA)                { return 0; }
     else if (key_code == PS2_BREAK_CODE) { ps2_on_break = 1; }
     else if (key_code == PS2_ENTER)      { return 0x0A; }
-    else if (key_code == PS2_ESC)        { return 0x00; }
+    else if (key_code == PS2_ESC)        { return 0x1B; }
     else if (key_code == PS2_BACKSPACE)  { return 0x5C; }
     else if (key_code == PS2_SPACE)      { return 0x20; }
     else if (key_code == PS2_TAB)        { return 0x09; }
