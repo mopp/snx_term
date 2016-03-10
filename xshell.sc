@@ -199,9 +199,9 @@ void main()
     while (1) {
         if (*PS2IN) {
             raw_key_code = *PS2DAT;
-            decoded_key_code = decode_key(raw_key_code);
-            if (decoded_key_code != 0) {
-                lcd_put_char(decoded_key_code);
+            char_code = decode_key(raw_key_code);
+            if (char_code != 0) {
+                lcd_put_char(char_code);
             }
         }
     }
