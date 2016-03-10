@@ -59,6 +59,19 @@ int strncmp(ncp1_ptr, ncp2_ptr, ncp_len)
 }
 
 
+int modulo(x_modul, y_modul)
+{
+    while (1) {
+        if (x_modul < y_modul) {
+            break;
+        }
+        x_modul = x_modul - y_modul;
+    }
+
+    return x_modul;
+}
+
+
 int test_eq(test_x, test_y)
 {
     if (test_x == test_y) {

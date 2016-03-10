@@ -173,6 +173,9 @@ void do_tests()
     cnt = cnt + test_eq(strncmp(&str1, &str1, 1), 0);
     cnt = cnt + test_eq(strncmp(&str1, &str1, 2), 0);
     cnt = cnt + test_neq(strncmp(&str1, &msg, 2), 0);
+    cnt = cnt + test_eq(modulo(10, 2), 0);
+    cnt = cnt + test_eq(modulo(10, 3), 1);
+    cnt = cnt + test_eq(modulo(200, 7), 4);
 
     if (cnt != 0) {
         lcd_clear();
