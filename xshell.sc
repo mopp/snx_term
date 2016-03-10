@@ -68,6 +68,12 @@ void print_str(str_ptr)
     }
 }
 
+void println_str(lnstr_ptr)
+{
+    print_str(lnstr_ptr);
+    lcd_put_char(0x0A);
+}
+
 
 PS2_BREAK_CODE   = 0xf0;
 PS2_ENTER        = 0x5A;
@@ -89,7 +95,7 @@ int decode_key(key_code)
         return 0;
     }
 
-    if (key_code == 0xFA)                { return 0; }
+         if (key_code == 0xFA)           { return 0x00; }
     else if (key_code == PS2_BREAK_CODE) { ps2_on_break = 1; }
     else if (key_code == PS2_ENTER)      { return 0x0A; }
     else if (key_code == PS2_ESC)        { return 0x1B; }
@@ -191,6 +197,24 @@ int getchar()
 }
 
 
+int CMD_PRINT[6];
+CMD_PRINT[0] = 0x50;
+CMD_PRINT[1] = 0x52;
+CMD_PRINT[2] = 0x49;
+CMD_PRINT[3] = 0x4e;
+CMD_PRINT[4] = 0x54;
+CMD_PRINT[5] = 0x00;
+int execute(buf_ptr, cmd_ptr)
+{
+    if (strncmp(cmd_ptr, &CMD_PRINT, 5) == 0) {
+        buf = cmd_ptr + 6;
+        println_str(buf);
+    }
+
+    return 1;
+}
+
+
 // Main
 void main()
 {
@@ -203,11 +227,14 @@ void main()
     msg[5] = 0x0A;
     msg[6] = 0x00;
 
-    int buffer[256];
+    BUFFER_SIZE = 128;
+    int in_buffer[129];
+    in_buffer[128] = 0x00;
+    in_buf_idx = 0;
 
     // Initialize.
-    lcd_clear();
     led_set(0x00, 0xFF);
+    lcd_clear();
     print_str(&msg);
 
     while (1) {
@@ -221,9 +248,31 @@ void main()
         led_set(input_char, 0xFF);
 
         // Make char upper case.
-        input_char = input_char - 0x20;
+        if ((0x61 <= input_char) && (input_char <= 0x7A)) {
+            input_char = input_char - 0x20;
+        }
 
+        // Print to terminal.
         lcd_put_char(input_char);
+
+        if (input_char == 0x0A) {
+            // Newline.
+            in_buffer[in_buf_idx] = 0x00;
+            buf = (&in_buffer + prev_tail_idx);
+            execute(&in_buffer, buf);
+
+            in_buf_idx = 0;
+        } else if ((input_char == 0x08) && (0 < in_buf_idx)) {
+            // Backspace.
+            in_buf_idx--;
+        } else {
+            in_buffer[in_buf_idx] = input_char;
+            in_buf_idx++;
+        }
+
+        if (in_buf_idx == BUFFER_SIZE) {
+            in_buf_idx = 0;
+        }
     }
 }
 
