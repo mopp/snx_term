@@ -13,15 +13,6 @@ lcd_current_x  = 0;
 lcd_current_y  = 0;
 void lcd_put_char(c)
 {
-    if (lcd_current_x == LCD_MAX_COLUMN) {
-        lcd_current_x = 0;
-        lcd_current_y = lcd_current_y + 1;
-    }
-
-    if (LCD_MAX_ROW <= lcd_current_y) {
-        lcd_current_y = 0;
-    }
-
     if (c == 0x0A) {
         // '\n'
         lcd_current_y = lcd_current_y + 1;
@@ -36,6 +27,22 @@ void lcd_put_char(c)
     } else {
         *(LCD + ((lcd_current_y * LCD_MAX_COLUMN) + lcd_current_x)) = c;
         lcd_current_x = lcd_current_x + 1;
+    }
+
+    if (lcd_current_x == LCD_MAX_COLUMN) {
+        lcd_current_x = 0;
+        lcd_current_y = lcd_current_y + 1;
+    }
+
+    if (LCD_MAX_ROW <= lcd_current_y) {
+        lcd_current_y = 1;
+        // Copy string from second line to firstline.
+        // And clear second line.
+        for (i = 0; i < LCD_MAX_COLUMN; i++) {
+            second_line = (LCD + (LCD_MAX_COLUMN + i));
+            *(LCD + i) = *second_line;
+            *second_line = 0x20;
+        }
     }
 }
 
