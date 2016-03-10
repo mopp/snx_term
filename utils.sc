@@ -1,6 +1,3 @@
-LEDG = 0xA003;  // LED
-
-
 int test_eq(test_x, test_y)
 {
     if (test_x == test_y) {
@@ -77,17 +74,37 @@ int strncmp(ncp1_ptr, ncp2_ptr, ncp_len)
 }
 
 
-int strlen(str_ptr)
+int strlen(ptr_strlen)
 {
     int cnt;
 
     cnt = 0;
-    while (*str_ptr != 0x00) {
+    while (*ptr_strlen != 0x00) {
         cnt++;
-        str_ptr++;
+        ptr_strlen++;
     }
 
     return cnt;
+}
+
+
+int atoi(ptr_atoi)
+{
+    int len;
+    int base;
+    int sum;
+    int i;
+
+    len  = strlen(ptr_atoi);
+    base = 1;
+    sum  = 0;
+
+    for (i = len - 1; 0 <= i; i--) {
+        sum = sum + (*(ptr_atoi + i) - 0x30) * base;
+        base = base * 10;
+    }
+
+    return sum;
 }
 
 

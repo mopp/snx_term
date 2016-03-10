@@ -5,6 +5,7 @@
 // ==================== Global variables ====================
 int START_MSG[6];
 int TEST_STR1[6];
+int TEST_STR2[5];
 int TEST_STR_MSG[7];
 int CMD_PRINT[6];
 int in_buffer[2400];
@@ -25,6 +26,11 @@ TEST_STR1[3] = 0x4C;
 TEST_STR1[4] = 0x4F;
 TEST_STR1[5] = 0x00;
 
+TEST_STR2[0] = 0x31;
+TEST_STR2[1] = 0x32;
+TEST_STR2[2] = 0x33;
+TEST_STR2[3] = 0x00;
+
 TEST_STR_MSG[0] = 0x46;
 TEST_STR_MSG[1] = 0x41;
 TEST_STR_MSG[2] = 0x49;
@@ -41,14 +47,15 @@ CMD_PRINT[4] = 0x54;
 CMD_PRINT[5] = 0x00;
 
 // Peripheral addrs.
-LCD = 0xA020;     // LCD
+LCD    = 0xA020;     // LCD
 PS2DAT = 0xA004;  // PS2
-PS2IN = 0xA005;
+PS2IN  = 0xA005;
+LEDG   = 0xA003;  // LED
 
 LCD_MAX_COLUMN = 16;
-LCD_MAX_ROW = 2;
-lcd_current_x = 0;
-lcd_current_y = 0;
+LCD_MAX_ROW    = 2;
+lcd_current_x  = 0;
+lcd_current_y  = 0;
 
 ps2_on_break = 0;
 
@@ -66,6 +73,7 @@ void do_tests()
     cnt = cnt + test_neq(strncmp(&TEST_STR1, &TEST_STR_MSG, 2), 0);
     cnt = cnt + test_eq(strlen(&TEST_STR1), 5);
     cnt = cnt + test_eq(strlen(&START_MSG), 5);
+    cnt = cnt + test_eq(atoi(&TEST_STR2), 123);
     cnt = cnt + test_eq(modulo(10, 2), 0);
     cnt = cnt + test_eq(modulo(10, 3), 1);
     cnt = cnt + test_eq(modulo(200, 7), 4);
