@@ -8,6 +8,7 @@ int TEST_STR2[5];
 int TEST_STR_MSG[7];
 int CMD_PRINT[6];
 int CMD_NONE[18];
+int tmp_buffer[256];
 int in_buffer[2400];
 
 BUFFER_SIZE = 2400;
@@ -84,35 +85,6 @@ ps2_on_break = 0;
 
 
 // ==================== Functions ====================
-void do_tests()
-{
-    int cnt;
-
-    cnt = 0;
-    cnt = cnt + test_eq(strcmp(&TEST_STR1, &TEST_STR1), 0);
-    cnt = cnt + test_neq(strcmp(&TEST_STR1, &TEST_STR_MSG), 0);
-    cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 1), 0);
-    cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 2), 0);
-    cnt = cnt + test_neq(strncmp(&TEST_STR1, &TEST_STR_MSG, 2), 0);
-    cnt = cnt + test_eq(strlen(&TEST_STR1), 5);
-    cnt = cnt + test_eq(strlen(&START_MSG), 5);
-    cnt = cnt + test_eq(atoi(&TEST_STR2), 123);
-    cnt = cnt + test_eq(modulo(10, 2), 0);
-    cnt = cnt + test_eq(modulo(10, 3), 1);
-    cnt = cnt + test_eq(modulo(200, 7), 4);
-    cnt = cnt + test_eq(div(4, 4), 1);
-    cnt = cnt + test_eq(div(12, 4), 3);
-    cnt = cnt + test_eq(div(45, 5), 9);
-
-    if (cnt != 0) {
-        clear();
-        print_str(&TEST_STR_MSG);
-
-        halt;
-    }
-}
-
-
 void lcd_putchar(ch)
 {
     int second_line;
@@ -247,6 +219,7 @@ int decode_key(key_code)
     else if (key_code == 0x0E) { return 0x60; }  // '`'
     else if (key_code == 0x4E) { return 0x2D; }  // '-'
     else if (key_code == 0x55) { return 0x3D; }  // '='
+    else if (key_code == 0x79) { return 0x2B; }  // '+' num key
 
     return 0;
 }
@@ -269,18 +242,113 @@ int getchar()
 }
 
 
+int evaluate_expression(ptr_eval)
+{
+    int ptr_plus;
+    int ptr_tmp;
+    int store_val;
+    int is_finish;
+    int lhs;
+    int state;
+    int STATE_PLUS;
+
+    STATE_PLUS = 1;
+    state      = 0;
+    lhs        = 0;
+
+    if (strchr(ptr_eval, 0x2B) != 0) {
+        state = STATE_PLUS;
+    }
+
+    if (state == STATE_PLUS) {
+        lhs = 0;
+        is_finish = 0;
+        while (1) {
+            ptr_plus = strchr(ptr_eval, 0x2B);
+            if (ptr_plus == 0) {
+                is_finish = 1;
+            }
+
+            ptr_tmp = strchr(ptr_eval, 0x20);
+            if ((ptr_tmp != 0) && (ptr_tmp < ptr_plus)) {
+                ptr_plus = ptr_tmp;
+            }
+
+            store_val = *ptr_plus;
+            *ptr_plus = 0x00;
+            lhs = lhs + atoi(ptr_eval);
+            *ptr_plus = store_val;
+
+            if (is_finish == 1) {
+                break;
+            }
+
+            ptr_eval = ptr_plus + 1;
+            while (1) {
+                if ((*ptr_eval != 0x20) && (*ptr_eval != 0x2B)) {
+                    break;
+                }
+                ptr_eval++;
+            }
+        }
+    } else {
+        println_str(ptr_eval);
+    }
+
+    return lhs;
+}
+
+
 int execute(buf_ptr, cmd_ptr)
 {
     int arg_ptr;
+    int result;
 
     if (strncmp(cmd_ptr, &CMD_PRINT, 5) == 0) {
         arg_ptr = cmd_ptr + 6;
-        println_str(arg_ptr);
+        result = evaluate_expression(arg_ptr);
+        if (result != 0) {
+            itoa(result, &tmp_buffer);
+            println_str(&tmp_buffer);
+        }
     } else {
         println_str(&CMD_NONE);
     }
 
     return 1;
+}
+
+
+void do_tests()
+{
+    int cnt;
+
+    cnt = 0;
+    cnt = cnt + test_eq(strcmp(&TEST_STR1, &TEST_STR1), 0);
+    cnt = cnt + test_neq(strcmp(&TEST_STR1, &TEST_STR_MSG), 0);
+    cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 1), 0);
+    cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 2), 0);
+    cnt = cnt + test_neq(strncmp(&TEST_STR1, &TEST_STR_MSG, 2), 0);
+    cnt = cnt + test_eq(strlen(&TEST_STR1), 5);
+    cnt = cnt + test_eq(strlen(&START_MSG), 5);
+    cnt = cnt + test_eq(atoi(&TEST_STR2), 123);
+    cnt = cnt + test_eq(is_number_str(&TEST_STR2), 1);
+    cnt = cnt + test_eq(is_number_str(&TEST_STR_MSG), 0);
+    cnt = cnt + test_eq(strchr(&TEST_STR2, 0x31), (&TEST_STR2));
+    cnt = cnt + test_eq(strchr(&TEST_STR2, 0x32), (&TEST_STR2 + 1));
+    cnt = cnt + test_eq(modulo(10, 2), 0);
+    cnt = cnt + test_eq(modulo(10, 3), 1);
+    cnt = cnt + test_eq(modulo(200, 7), 4);
+    cnt = cnt + test_eq(div(4, 4), 1);
+    cnt = cnt + test_eq(div(12, 4), 3);
+    cnt = cnt + test_eq(div(45, 5), 9);
+
+    if (cnt != 0) {
+        clear();
+        print_str(&TEST_STR_MSG);
+
+        halt;
+    }
 }
 
 
