@@ -23,8 +23,16 @@ void lcd_put_char(c)
     }
 
     if (c == 0x0A) {
+        // '\n'
         lcd_current_y = lcd_current_y + 1;
         lcd_current_x = 0;
+    } else if(c == 0x5C) {
+        if (lcd_current_x != 0) {
+            // '\b'
+            lcd_current_x--;
+            lcd_put_char(0x20);
+            lcd_current_x--;
+        }
     } else {
         *(LCD + ((lcd_current_y * LCD_MAX_COLUMN) + lcd_current_x)) = c;
         lcd_current_x = lcd_current_x + 1;
