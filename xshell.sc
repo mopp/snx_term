@@ -174,36 +174,39 @@ void do_tests()
 }
 
 
-// Main
-void main()
+int getchar()
 {
-    int str[32];
-    str[0]  = 0x48;
-    str[1]  = 0x45;
-    str[2]  = 0x4C;
-    str[3]  = 0x4C;
-    str[4]  = 0x4F;
-    str[5]  = 0x0A;
-    str[6]  = 0x57;
-    str[7]  = 0x4F;
-    str[8]  = 0x52;
-    str[9]  = 0x4C;
-    str[10] = 0x44;
-    str[11] = 0x00;
-
-    lcd_clear();
-    print_str(&str);
-
-    led_set(0xFF, 0xFF);
-
     while (1) {
         if (*PS2IN) {
             raw_key_code = *PS2DAT;
             char_code = decode_key(raw_key_code);
             if (char_code != 0) {
-                lcd_put_char(char_code);
+                return char_code;
             }
         }
+    }
+}
+
+
+// Main
+void main()
+{
+    int msg[6];
+    msg[0] = 0x53;
+    msg[1] = 0x54;
+    msg[2] = 0x41;
+    msg[3] = 0x52;
+    msg[4] = 0x54;
+    msg[5] = 0x00;
+
+    lcd_clear();
+    print_str(&msg);
+
+    led_set(0x55, 0xFF);
+
+    while (1) {
+        input_char = getchar();
+        lcd_put_char(input_char);
     }
 }
 
