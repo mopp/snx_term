@@ -62,19 +62,19 @@ void print_str(str_ptr)
 }
 
 
-PS2_BREAK_CODE = 0xf0;
-PS2_ENTER      = 0x5A;
-PS2_ESC        = 0x76;
-PS2_BACKSPACE  = 0x66;
-PS2_SPACE      = 0x29;
-PS2_TAB        = 0x0D;
-PS2_CAPS       = 0x58;
-PS2_L_SHIFT    = 0x12;
-PS2_L_ALT      = 0x11;
-PS2_L_CTRL     = 0x14;
-PS2_R_SHIFT    = 0x59;
-PS2_BREAK_CODE = 0xF0;
-ps2_on_break   = 0;
+PS2_BREAK_CODE   = 0xf0;
+PS2_ENTER        = 0x5A;
+PS2_ESC          = 0x76;
+PS2_BACKSPACE    = 0x66;
+PS2_SPACE        = 0x29;
+PS2_TAB          = 0x0D;
+PS2_CAPS         = 0x58;
+PS2_L_SHIFT      = 0x12;
+PS2_L_ALT        = 0x11;
+PS2_L_CTRL       = 0x14;
+PS2_R_SHIFT      = 0x59;
+PS2_BREAK_CODE   = 0xF0;
+ps2_on_break     = 0;
 int decode_key(key_code)
 {
     if (ps2_on_break == 1) {
@@ -115,6 +115,21 @@ int decode_key(key_code)
     else if (key_code == 0x22)           { return 0x78; } // 'x'
     else if (key_code == 0x35)           { return 0x79; } // 'y'
     else if (key_code == 0x1A)           { return 0x7A; } // 'z'
+    else if (key_code == 0x45)           { return 0x30; } // '0'
+    else if (key_code == 0x16)           { return 0x31; } // '1'
+    else if (key_code == 0x1E)           { return 0x32; } // '2'
+    else if (key_code == 0x26)           { return 0x33; } // '3'
+    else if (key_code == 0x25)           { return 0x34; } // '4'
+    else if (key_code == 0x2E)           { return 0x35; } // '5'
+    else if (key_code == 0x36)           { return 0x36; } // '6'
+    else if (key_code == 0x3D)           { return 0x37; } // '7'
+    else if (key_code == 0x3E)           { return 0x38; } // '8'
+    else if (key_code == 0x46)           { return 0x39; } // '9'
+    else if (key_code == 0x49)           { return 0x2E; } // '.'
+    else if (key_code == 0x4A)           { return 0x2F; } // '/'
+    else if (key_code == 0x0E)           { return 0x60; } // '`'
+    else if (key_code == 0x4E)           { return 0x2D; } // '-'
+    else if (key_code == 0x55)           { return 0x3D; } // '='
 
     return 0;
 }
