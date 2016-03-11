@@ -166,6 +166,20 @@ void println_str(str_ptr)
 }
 
 
+void print_num(num_print)
+{
+    itoa(num_print, &tmp_buffer);
+    print_str(&tmp_buffer);
+}
+
+
+void println_num(num_print)
+{
+    print_num(num_print);
+    putchar(0x0A);
+}
+
+
 int decode_key(key_code)
 {
     int ascii_code;
@@ -186,10 +200,10 @@ int decode_key(key_code)
         // Avoid return here, because it may cause fault (WTF!!!).
     }
 
-         if (key_code == 0xFA) { ascii_code = 0x00; }
+    if (key_code == 0xFA) { ascii_code = 0x00; }
     else if (key_code == 0xF0) { ps2_on_break = 1;  }  // Break code.
     else if (ps2_is_shift == 1) {
-             if (key_code == 0x16) { ascii_code = 0x21; } // '!'
+        if (key_code == 0x16) { ascii_code = 0x21; } // '!'
         else if (key_code == 0x1E) { ascii_code = 0x22; } // '"'
         else if (key_code == 0x26) { ascii_code = 0x23; } // '#'
         else if (key_code == 0x25) { ascii_code = 0x24; } // '$'
@@ -346,8 +360,7 @@ int execute(cmd_ptr)
         arg_ptr = cmd_ptr + 6;
         result = evaluate_expression(arg_ptr);
         if (result != 0) {
-            itoa(result, &tmp_buffer);
-            println_str(&tmp_buffer);
+            println_num(result);
         }
     } else {
         println_str(&CMD_NONE);
