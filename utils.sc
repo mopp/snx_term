@@ -200,3 +200,23 @@ int itoa(num_itoa, ptr_itoa)
 
     return ptr_itoa;
 }
+
+
+int trim_spaces(ptr_trim)
+{
+    int work_ptr;
+
+    while (*ptr_trim != 0x00) {
+        if (*ptr_trim == 0x20) {
+            work_ptr = ptr_trim;
+            while (*work_ptr != 0x00) {
+                *work_ptr = *(work_ptr + 1);
+                work_ptr++;
+            }
+        } else {
+            ptr_trim++;
+        }
+    }
+
+    return ptr_trim;
+}
