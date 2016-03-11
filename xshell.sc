@@ -367,8 +367,6 @@ int evaluate_expression(ptr_eval)
     state            = 0;
     result_value     = 0;
 
-    trim_spaces(ptr_eval);
-
     // '*' -> 0x2A
     // '+' -> 0x2B
     // '-' -> 0x2D
@@ -378,6 +376,8 @@ int evaluate_expression(ptr_eval)
     }
 
     if (state == STATE_ARITHMETIC) {
+        trim_spaces(ptr_eval);
+
         result_value = 0;
         prev_operator = 0;
         while (1) {
@@ -468,6 +468,7 @@ int exe_omikuji()
         println_str(&SHOKICHI);
     }
 }
+
 
 int execute(cmd_ptr)
 {
