@@ -15,7 +15,6 @@ int tmp_buffer[256];
 int input_buffer[512];
 
 BUFFER_SIZE = 512;
-SEED        = 10;
 
 CMD_LET[0] = 0x4c;
 CMD_LET[1] = 0x45;
@@ -44,36 +43,6 @@ CMD_OMIKUJI[4] = 0x55;
 CMD_OMIKUJI[5] = 0x4a;
 CMD_OMIKUJI[6] = 0x49;
 CMD_OMIKUJI[7] = 0x00;
-
-DAIKICHI[0] = 0x44;
-DAIKICHI[1] = 0x41;
-DAIKICHI[2] = 0x49;
-DAIKICHI[3] = 0x4b;
-DAIKICHI[4] = 0x49;
-DAIKICHI[5] = 0x43;
-DAIKICHI[6] = 0x48;
-DAIKICHI[7] = 0x49;
-DAIKICHI[8] = 0x00;
-
-CHUKICHI[0] = 0x43;
-CHUKICHI[1] = 0x48;
-CHUKICHI[2] = 0x55;
-CHUKICHI[3] = 0x4b;
-CHUKICHI[4] = 0x49;
-CHUKICHI[5] = 0x43;
-CHUKICHI[6] = 0x48;
-CHUKICHI[7] = 0x49;
-CHUKICHI[8] = 0x00;
-
-SHOKICHI[0] = 0x53;
-SHOKICHI[1] = 0x48;
-SHOKICHI[2] = 0x4f;
-SHOKICHI[3] = 0x4b;
-SHOKICHI[4] = 0x49;
-SHOKICHI[5] = 0x43;
-SHOKICHI[6] = 0x48;
-SHOKICHI[7] = 0x49;
-SHOKICHI[8] = 0x00;
 
 CMD_NONE[0] = 0x2a;
 CMD_NONE[1] = 0x49;
@@ -108,8 +77,6 @@ lcd_current_y  = 0;
 ps2_on_break = 0;
 ps2_is_shift = 0;
 
-is_arithmetic  = 0;
-rand_seed = SEED;
 
 // ==================== Global variables ====================
 #include "display_vga.sc"
@@ -440,31 +407,7 @@ int evaluate_expression(ptr_eval)
     return result_value;
 }
 
-
-
-int rand3()
-{
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed >> 1));
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed << 1));
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed >> 2));
-    return modulo(rand_seed, 3);
-}
-
-
-int exe_omikuji()
-{
-    int omikuji_result;
-    omikuji_result = rand3();
-
-    if (omikuji_result == 0) {
-        println_str(&DAIKICHI);
-    } else if (omikuji_result == 1) {
-        println_str(&CHUKICHI);
-    } else if (omikuji_result == 2) {
-        println_str(&SHOKICHI);
-    }
-}
-
+#include "cmd_omikuji.sc"
 
 int execute(cmd_ptr)
 {
@@ -506,6 +449,9 @@ void main()
     clear();
     println_str(&START_MSG);
 
+    putchar(0x25);
+    putchar(0x20);
+
     while (1) {
         input_char = getchar();
         if (input_char == 0x1B) {
@@ -528,6 +474,9 @@ void main()
             // Newline.
             input_buffer[buf_idx] = 0x00;
             execute(&input_buffer);
+
+            putchar(0x25);
+            putchar(0x20);
 
             buf_idx = 0;
         } else if ((input_char == 0x5C) && (0 < buf_idx)) {
