@@ -111,12 +111,24 @@ void inc_adress_x()
     }
 }
 
+void delete_char(){
+    if(vga_current_x > 0){
+        vga_current--;
+        vga_current_x--;
+        *(VGA + vga_current) = 0xFF | COLOR;
+        move_cursor();
+    }
+}
 
 void vga_putchar(c)
 {
     if (c == 0x0A) {
         line_break();
-    } else {
+    }
+    else if(c == 0x5C){
+        delete_char();
+    }
+    else {
         *(VGA + vga_current) = c | COLOR;
         inc_adress_x();  // 1文字分右にずらす
         move_cursor();

@@ -7,11 +7,16 @@ int TEST_STR1[6];
 int TEST_STR2[5];
 int TEST_STR_MSG[7];
 int CMD_PRINT[6];
+int CMD_OMIKUJI[8];
+int DAIKICHI[9];
+int CHUKICHI[9];
+int SHOKICHI[9];
 int CMD_NONE[18];
 int tmp_buffer[256];
 int input_buffer[512];
 
 BUFFER_SIZE = 512;
+SEED        = 10;
 
 START_MSG[0] = 0x53;
 START_MSG[1] = 0x54;
@@ -47,6 +52,45 @@ CMD_PRINT[3] = 0x4e;
 CMD_PRINT[4] = 0x54;
 CMD_PRINT[5] = 0x00;
 
+CMD_OMIKUJI[0] = 0x4f;
+CMD_OMIKUJI[1] = 0x4d;
+CMD_OMIKUJI[2] = 0x49;
+CMD_OMIKUJI[3] = 0x4b;
+CMD_OMIKUJI[4] = 0x55;
+CMD_OMIKUJI[5] = 0x4a;
+CMD_OMIKUJI[6] = 0x49;
+CMD_OMIKUJI[7] = 0x00;
+
+DAIKICHI[0] = 0x44;
+DAIKICHI[1] = 0x41;
+DAIKICHI[2] = 0x49;
+DAIKICHI[3] = 0x4b;
+DAIKICHI[4] = 0x49;
+DAIKICHI[5] = 0x43;
+DAIKICHI[6] = 0x48;
+DAIKICHI[7] = 0x49;
+DAIKICHI[8] = 0x00;
+
+CHUKICHI[0] = 0x43;
+CHUKICHI[1] = 0x48;
+CHUKICHI[2] = 0x55;
+CHUKICHI[3] = 0x4b;
+CHUKICHI[4] = 0x49;
+CHUKICHI[5] = 0x43;
+CHUKICHI[6] = 0x48;
+CHUKICHI[7] = 0x49;
+CHUKICHI[8] = 0x00;
+
+SHOKICHI[0] = 0x53;
+SHOKICHI[1] = 0x48;
+SHOKICHI[2] = 0x4f;
+SHOKICHI[3] = 0x4b;
+SHOKICHI[4] = 0x49;
+SHOKICHI[5] = 0x43;
+SHOKICHI[6] = 0x48;
+SHOKICHI[7] = 0x49;
+SHOKICHI[8] = 0x00;
+
 CMD_NONE[0] = 0x2a;
 CMD_NONE[1] = 0x49;
 CMD_NONE[2] = 0x4e;
@@ -81,6 +125,7 @@ ps2_on_break = 0;
 ps2_is_shift = 0;
 
 is_arithmetic  = 0;
+rand_seed = SEED;
 
 // ==================== Global variables ====================
 #include "display_vga.sc"
@@ -400,6 +445,27 @@ int evaluate_expression(ptr_eval)
     return result_value;
 }
 
+int rand3(){
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed>>1));
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed<<1));
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed>>2));
+    return modulo(rand_seed, 3);
+}
+
+int exe_omikuji(){
+    int omikuji_result;
+    omikuji_result = rand3();
+
+    if(omikuji_result == 0){
+        println_str(&DAIKICHI);
+    }
+    else if(omikuji_result == 1){
+        println_str(&CHUKICHI);
+    }
+    else if(omikuji_result == 2){
+        println_str(&SHOKICHI);
+    }
+}
 
 int execute(cmd_ptr)
 {
@@ -414,6 +480,8 @@ int execute(cmd_ptr)
         if (is_arithmetic == 1) {
             println_num(result);
         }
+    } else if(strncmp(cmd_ptr, &CMD_OMIKUJI, 7) == 0){
+        exe_omikuji();
     } else {
         trim_spaces(cmd_ptr);
         println_str(cmd_ptr);
