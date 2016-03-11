@@ -80,6 +80,7 @@ lcd_current_y  = 0;
 ps2_on_break = 0;
 ps2_is_shift = 0;
 
+is_arithmetic  = 0;
 
 // ==================== Global variables ====================
 #include "display_vga.sc"
@@ -294,60 +295,109 @@ int getchar()
 }
 
 
+int has_arithmetic_ops(ptr_arith)
+{
+    int has_operator;
+    has_operator = strchr(ptr_arith, 0x2A) + strchr(ptr_arith, 0x2B) + strchr(ptr_arith, 0x2D) + strchr(ptr_arith, 0x2F);
+    if (has_operator != 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
 int evaluate_expression(ptr_eval)
 {
-    int ptr_plus;
+    int ptr_operator;
+    int prev_operator;
     int ptr_tmp;
+    int val_tmp;
     int store_val;
-    int is_finish;
-    int lhs;
+    int result_value;
     int state;
-    int STATE_PLUS;
+    int STATE_ARITHMETIC;
 
-    STATE_PLUS = 1;
-    state      = 0;
-    lhs        = 0;
+    STATE_ARITHMETIC = 1;
+    state            = 0;
+    result_value     = 0;
 
-    if (strchr(ptr_eval, 0x2B) != 0) {
-        state = STATE_PLUS;
+    trim_spaces(ptr_eval);
+
+    // '*' -> 0x2A
+    // '+' -> 0x2B
+    // '-' -> 0x2D
+    // '/' -> 0x2F
+    if (has_arithmetic_ops(ptr_eval) != 0) {
+        state = STATE_ARITHMETIC;
     }
 
-    if (state == STATE_PLUS) {
-        lhs = 0;
-        is_finish = 0;
+    if (state == STATE_ARITHMETIC) {
+        result_value = 0;
+        prev_operator = 0;
         while (1) {
-            ptr_plus = strchr(ptr_eval, 0x2B);
-            if (ptr_plus == 0) {
-                is_finish = 1;
+            ptr_operator = strchr(ptr_eval, 0x2A);
+
+            ptr_tmp = strchr(ptr_eval, 0x2B);
+            if (ptr_operator == 0) {
+                ptr_operator = ptr_tmp;
+            } else if ((ptr_tmp != 0) && (ptr_tmp < ptr_operator)) {
+                ptr_operator = ptr_tmp;
             }
 
-            ptr_tmp = strchr(ptr_eval, 0x20);
-            if ((ptr_tmp != 0) && (ptr_tmp < ptr_plus)) {
-                ptr_plus = ptr_tmp;
+            ptr_tmp = strchr(ptr_eval, 0x2D);
+            if (ptr_operator == 0) {
+                ptr_operator = ptr_tmp;
+            } else if ((ptr_tmp != 0) && (ptr_tmp < ptr_operator)) {
+                ptr_operator = ptr_tmp;
             }
 
-            store_val = *ptr_plus;
-            *ptr_plus = 0x00;
-            lhs = lhs + atoi(ptr_eval);
-            *ptr_plus = store_val;
+            ptr_tmp = strchr(ptr_eval, 0x2F);
+            if (ptr_operator == 0) {
+                ptr_operator = ptr_tmp;
+            } else if ((ptr_tmp != 0) && (ptr_tmp < ptr_operator)) {
+                ptr_operator = ptr_tmp;
+            }
 
-            if (is_finish == 1) {
+            // Read operand.
+            if (ptr_operator == 0) {
+                // Last operand.
+                val_tmp = atoi(ptr_eval);
+            } else {
+                store_val     = *ptr_operator;
+                *ptr_operator = 0x00;
+                val_tmp       = atoi(ptr_eval);
+                *ptr_operator = store_val;
+            }
+
+            if (prev_operator == 0) {
+                // First operand.
+                result_value = val_tmp;
+            } else if (0x2A == prev_operator) {
+                result_value = result_value * val_tmp;
+            } else if (0x2B == prev_operator) {
+                result_value = result_value + val_tmp;
+            } else if (0x2D == prev_operator) {
+                result_value = result_value - val_tmp;
+            } else if (0x2F == prev_operator) {
+                result_value = div(result_value, val_tmp);
+            }
+            prev_operator = store_val;
+
+            if (ptr_operator == 0) {
                 break;
             }
 
-            ptr_eval = ptr_plus + 1;
-            while (1) {
-                if ((*ptr_eval != 0x20) && (*ptr_eval != 0x2B)) {
-                    break;
-                }
-                ptr_eval++;
-            }
+            ptr_eval = ptr_operator + 1;
         }
+
+        is_arithmetic = 1;
     } else {
         println_str(ptr_eval);
+        is_arithmetic = 0;
     }
 
-    return lhs;
+    return result_value;
 }
 
 
@@ -356,13 +406,17 @@ int execute(cmd_ptr)
     int arg_ptr;
     int result;
 
+    is_arithmetic  = 0;
+
     if (strncmp(cmd_ptr, &CMD_PRINT, 5) == 0) {
         arg_ptr = cmd_ptr + 6;
         result = evaluate_expression(arg_ptr);
-        if (result != 0) {
+        if (is_arithmetic == 1) {
             println_num(result);
         }
     } else {
+        trim_spaces(cmd_ptr);
+        println_str(cmd_ptr);
         println_str(&CMD_NONE);
     }
 
