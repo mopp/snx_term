@@ -29,6 +29,14 @@ void vga_clear()
     *(VGA | VGACLS) = COLOR;
     while (*(VGA | VGACLS))
         ;
+
+    vga_current_x   = 0;
+    vga_current_y   = 0;
+    vga_current     = 0;
+    topline_y       = 0;
+    clear_cnt       = 0;
+    scroll_cnt      = 1;
+    scroll_flg      = 0;
 }
 
 
