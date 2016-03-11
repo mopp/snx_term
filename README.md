@@ -1,7 +1,7 @@
 # SN/X terminal program.
 
-# Authors
-Kobiyama
+## Authors
+Kobiyama  
 Kawamura
 
 2016/03/11
