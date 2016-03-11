@@ -1,10 +1,10 @@
 VGA     = 0xC000;
-COLOR   = 0xF000;  // 文字:白　背景:黒
 VGACLS  = 0x0FEC;
 SCROLL  = 0x0FED;
 CURSOR1 = 0x0FEE;  // 座標
 CURSOR2 = 0x0FEF;  // 形状・色
 
+COLOR_DEFAULT   = 0xF000;  // 文字:白　背景:黒
 DISP_COLUMN_MAX = 80 - 1;
 DISP_ROW_MAX    = 30 - 1;
 VGA_MAX_ROW     = 32 - 1;  // 不可視領域含む
@@ -15,7 +15,7 @@ topline_y       = 0;
 clear_cnt       = 0;
 scroll_cnt      = 1;
 scroll_flg      = 0;
-
+color           = COLOR_DEFAULT;
 
 void cursor_init()
 {
@@ -23,10 +23,17 @@ void cursor_init()
     *(VGA | CURSOR2) = 0x03F0;
 }
 
+void change_color(select_color){
+    color = select_color;
+}
+
+void reverse_color(){
+    color = COLOR_DEFAULT;
+}
 
 void vga_clear()
 {
-    *(VGA | VGACLS) = COLOR;
+    *(VGA | VGACLS) = color;
     while (*(VGA | VGACLS))
         ;
 
@@ -69,7 +76,7 @@ void clear_topline()
     for (clear_cnt = 0; clear_cnt <= DISP_COLUMN_MAX; clear_cnt++) {
         topline_y = 0x1F & (vga_current_y + 3);
         topline = (topline_y << 7) | clear_cnt;
-        *(VGA + topline) = 0xFF | COLOR;
+        *(VGA + topline) = 0xFF | color;
     }
 }
 
@@ -115,7 +122,7 @@ void delete_char(){
     if(vga_current_x > 0){
         vga_current--;
         vga_current_x--;
-        *(VGA + vga_current) = 0xFF | COLOR;
+        *(VGA + vga_current) = 0xFF | color;
         move_cursor();
     }
 }
@@ -124,10 +131,12 @@ void vga_putchar(c)
 {
     if (c == 0x0A) {
         line_break();
-    } else if(c == 0x5C){
+    }
+    else if(c == 0x5C){
         delete_char();
-    } else {
-        *(VGA + vga_current) = c | COLOR;
+    }
+    else {
+        *(VGA + vga_current) = c | color;
         inc_adress_x();  // 1文字分右にずらす
         move_cursor();
     }
