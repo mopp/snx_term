@@ -445,24 +445,26 @@ int evaluate_expression(ptr_eval)
     return result_value;
 }
 
-int rand3(){
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed>>1));
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed<<1));
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed>>2));
+
+int rand3()
+{
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed >> 1));
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed << 1));
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed >> 2));
     return modulo(rand_seed, 3);
 }
 
-int exe_omikuji(){
+
+int exe_omikuji()
+{
     int omikuji_result;
     omikuji_result = rand3();
 
-    if(omikuji_result == 0){
+    if (omikuji_result == 0) {
         println_str(&DAIKICHI);
-    }
-    else if(omikuji_result == 1){
+    } else if (omikuji_result == 1) {
         println_str(&CHUKICHI);
-    }
-    else if(omikuji_result == 2){
+    } else if (omikuji_result == 2) {
         println_str(&SHOKICHI);
     }
 }

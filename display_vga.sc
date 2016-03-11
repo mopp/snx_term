@@ -124,11 +124,9 @@ void vga_putchar(c)
 {
     if (c == 0x0A) {
         line_break();
-    }
-    else if(c == 0x5C){
+    } else if(c == 0x5C){
         delete_char();
-    }
-    else {
+    } else {
         *(VGA + vga_current) = c | COLOR;
         inc_adress_x();  // 1文字分右にずらす
         move_cursor();
