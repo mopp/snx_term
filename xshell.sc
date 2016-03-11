@@ -303,6 +303,16 @@ int has_arithmetic_ops(ptr_arith)
 }
 
 
+int is_variable_char(var_ch)
+{
+    if ((0x41 <= var_ch) && (var_ch <= 0x5A)) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
 int evaluate_expression(ptr_eval)
 {
     int ptr_operator;
@@ -315,7 +325,7 @@ int evaluate_expression(ptr_eval)
     int STATE_ARITHMETIC;
 
     STATE_ARITHMETIC = 1;
-    STATE_NUMBER     = 2;
+    STATE_VAR_ASSIGN = 2;
     state            = 0;
     result_value     = 0;
 
@@ -323,14 +333,14 @@ int evaluate_expression(ptr_eval)
     // '+' -> 0x2B
     // '-' -> 0x2D
     // '/' -> 0x2F
-    if (has_arithmetic_ops(ptr_eval) != 0) {
+    if (is_variable_char(*ptr_eval) == 1 && 1 < strlen(ptr_eval)) {
+        state = STATE_VAR_ASSIGN;
+        ptr_eval = ptr_eval + 2;
+    } else if (has_arithmetic_ops(ptr_eval) != 0 || is_number_str(ptr_eval) == 1) {
         state = STATE_ARITHMETIC;
-    } else if (2 < strlen(ptr_eval) && is_number_str(ptr_eval + 2) == 1) {
-        state = STATE_NUMBER;
-        ptr_eval + 2;
     }
 
-    if (state == STATE_ARITHMETIC) {
+    if (state == STATE_ARITHMETIC || state == STATE_VAR_ASSIGN) {
         trim_spaces(ptr_eval);
 
         result_value = 0;
@@ -423,8 +433,9 @@ int execute(cmd_ptr)
             println_num(result);
         }
     } else if(strncmp(cmd_ptr, &CMD_LET, 3) == 0){
-        arg_ptr = cmd_ptr + 6;
-        VARIABLES[*(cmd_ptr + 4) - 0x41] = atoi(cmd_ptr + 6);
+        // LET A 1 + 2 + 3
+        arg_ptr = cmd_ptr + 4;
+        VARIABLES[*arg_ptr - 0x41] = evaluate_expression(arg_ptr);
     } else if(strncmp(cmd_ptr, &CMD_OMIKUJI, 7) == 0){
         exe_omikuji();
     } else {
