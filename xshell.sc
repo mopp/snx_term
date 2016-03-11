@@ -78,6 +78,8 @@ lcd_current_x  = 0;
 lcd_current_y  = 0;
 
 ps2_on_break = 0;
+ps2_is_shift = 0;
+
 
 // ==================== Global variables ====================
 #include "display_vga.sc"
@@ -166,62 +168,98 @@ void println_str(str_ptr)
 
 int decode_key(key_code)
 {
-    if (ps2_on_break == 1) {
-        ps2_on_break = 0;
-        return 0;
+    int ascii_code;
+    ascii_code = 0;
+
+    if ((key_code == 0x59) || (key_code == 0x12)) {
+        // Handle shift key.
+        if (ps2_on_break == 1) {
+            ps2_is_shift = 0;
+        } else {
+            ps2_is_shift = 1;
+        }
     }
 
-    if (key_code == 0xFA) { return 0x00; }
-    else if (key_code == 0xF0) { ps2_on_break = 1; }  // Break code.
-    else if (key_code == 0x5A) { return 0x0A; }  // Enter.
-    else if (key_code == 0x76) { return 0x1B; }  // ESC
-    else if (key_code == 0x66) { return 0x5C; }  // Backspace.
-    else if (key_code == 0x29) { return 0x20; }  // Space.
-    else if (key_code == 0x0D) { return 0x09; }  // Tab.
-    else if (key_code == 0x1C) { return 0x61; }  // 'a'
-    else if (key_code == 0x32) { return 0x62; }  // 'b'
-    else if (key_code == 0x21) { return 0x63; }  // 'c'
-    else if (key_code == 0x23) { return 0x64; }  // 'd'
-    else if (key_code == 0x24) { return 0x65; }  // 'e'
-    else if (key_code == 0x2B) { return 0x66; }  // 'f'
-    else if (key_code == 0x34) { return 0x67; }  // 'g'
-    else if (key_code == 0x33) { return 0x68; }  // 'h'
-    else if (key_code == 0x43) { return 0x69; }  // 'i'
-    else if (key_code == 0x3B) { return 0x6A; }  // 'j'
-    else if (key_code == 0x42) { return 0x6B; }  // 'k'
-    else if (key_code == 0x4B) { return 0x6C; }  // 'l'
-    else if (key_code == 0x3A) { return 0x6D; }  // 'm'
-    else if (key_code == 0x31) { return 0x6E; }  // 'n'
-    else if (key_code == 0x44) { return 0x6F; }  // 'o'
-    else if (key_code == 0x4D) { return 0x70; }  // 'p'
-    else if (key_code == 0x15) { return 0x71; }  // 'q'
-    else if (key_code == 0x2D) { return 0x72; }  // 'r'
-    else if (key_code == 0x1B) { return 0x73; }  // 's'
-    else if (key_code == 0x2C) { return 0x74; }  // 't'
-    else if (key_code == 0x3C) { return 0x75; }  // 'u'
-    else if (key_code == 0x2A) { return 0x76; }  // 'v'
-    else if (key_code == 0x1D) { return 0x77; }  // 'w'
-    else if (key_code == 0x22) { return 0x78; }  // 'x'
-    else if (key_code == 0x35) { return 0x79; }  // 'y'
-    else if (key_code == 0x1A) { return 0x7A; }  // 'z'
-    else if (key_code == 0x45) { return 0x30; }  // '0'
-    else if (key_code == 0x16) { return 0x31; }  // '1'
-    else if (key_code == 0x1E) { return 0x32; }  // '2'
-    else if (key_code == 0x26) { return 0x33; }  // '3'
-    else if (key_code == 0x25) { return 0x34; }  // '4'
-    else if (key_code == 0x2E) { return 0x35; }  // '5'
-    else if (key_code == 0x36) { return 0x36; }  // '6'
-    else if (key_code == 0x3D) { return 0x37; }  // '7'
-    else if (key_code == 0x3E) { return 0x38; }  // '8'
-    else if (key_code == 0x46) { return 0x39; }  // '9'
-    else if (key_code == 0x49) { return 0x2E; }  // '.'
-    else if (key_code == 0x4A) { return 0x2F; }  // '/'
-    else if (key_code == 0x0E) { return 0x60; }  // '`'
-    else if (key_code == 0x4E) { return 0x2D; }  // '-'
-    else if (key_code == 0x55) { return 0x3D; }  // '='
-    else if (key_code == 0x79) { return 0x2B; }  // '+' num key
+    if (ps2_on_break == 1) {
+        ps2_on_break = 0;
+        key_code = 0x00;
+        // Avoid return here, because it may cause fault (WTF!!!).
+    }
 
-    return 0;
+         if (key_code == 0xFA) { ascii_code = 0x00; }
+    else if (key_code == 0xF0) { ps2_on_break = 1;  }  // Break code.
+    else if (ps2_is_shift == 1) {
+             if (key_code == 0x16) { ascii_code = 0x21; } // '!'
+        else if (key_code == 0x1E) { ascii_code = 0x22; } // '"'
+        else if (key_code == 0x26) { ascii_code = 0x23; } // '#'
+        else if (key_code == 0x25) { ascii_code = 0x24; } // '$'
+        else if (key_code == 0x2E) { ascii_code = 0x25; } // '%'
+        else if (key_code == 0x36) { ascii_code = 0x26; } // '&'
+        else if (key_code == 0x3D) { ascii_code = 0x27; } // '''
+        else if (key_code == 0x3E) { ascii_code = 0x28; } // '('
+        else if (key_code == 0x46) { ascii_code = 0x29; } // ')'
+        else if (key_code == 0x4E) { ascii_code = 0x3D; } // '='
+        else if (key_code == 0x55) { ascii_code = 0x7E; } // '~'
+        else if (key_code == 0x6A) { ascii_code = 0x7C; } // '|'
+        else if (key_code == 0x54) { ascii_code = 0x60; } // '`'
+        else if (key_code == 0x5B) { ascii_code = 0x7B; } // '{'
+        else if (key_code == 0x4C) { ascii_code = 0x2B; } // '+'
+        else if (key_code == 0x52) { ascii_code = 0x2A; } // '*'
+        else if (key_code == 0x5D) { ascii_code = 0x7D; } // '}'
+        else if (key_code == 0x41) { ascii_code = 0x3C; } // '<'
+        else if (key_code == 0x49) { ascii_code = 0x3E; } // '>'
+        else if (key_code == 0x4A) { ascii_code = 0x3F; } // '?'
+        else if (key_code == 0x51) { ascii_code = 0x5F; } // '_'
+    }
+    else if (key_code == 0x5A) { ascii_code = 0x0A; }  // Enter.
+    else if (key_code == 0x76) { ascii_code = 0x1B; }  // ESC
+    else if (key_code == 0x66) { ascii_code = 0x5C; }  // Backspace.
+    else if (key_code == 0x29) { ascii_code = 0x20; }  // Space.
+    else if (key_code == 0x0D) { ascii_code = 0x09; }  // Tab.
+    else if (key_code == 0x1C) { ascii_code = 0x61; }  // 'a'
+    else if (key_code == 0x32) { ascii_code = 0x62; }  // 'b'
+    else if (key_code == 0x21) { ascii_code = 0x63; }  // 'c'
+    else if (key_code == 0x23) { ascii_code = 0x64; }  // 'd'
+    else if (key_code == 0x24) { ascii_code = 0x65; }  // 'e'
+    else if (key_code == 0x2B) { ascii_code = 0x66; }  // 'f'
+    else if (key_code == 0x34) { ascii_code = 0x67; }  // 'g'
+    else if (key_code == 0x33) { ascii_code = 0x68; }  // 'h'
+    else if (key_code == 0x43) { ascii_code = 0x69; }  // 'i'
+    else if (key_code == 0x3B) { ascii_code = 0x6A; }  // 'j'
+    else if (key_code == 0x42) { ascii_code = 0x6B; }  // 'k'
+    else if (key_code == 0x4B) { ascii_code = 0x6C; }  // 'l'
+    else if (key_code == 0x3A) { ascii_code = 0x6D; }  // 'm'
+    else if (key_code == 0x31) { ascii_code = 0x6E; }  // 'n'
+    else if (key_code == 0x44) { ascii_code = 0x6F; }  // 'o'
+    else if (key_code == 0x4D) { ascii_code = 0x70; }  // 'p'
+    else if (key_code == 0x15) { ascii_code = 0x71; }  // 'q'
+    else if (key_code == 0x2D) { ascii_code = 0x72; }  // 'r'
+    else if (key_code == 0x1B) { ascii_code = 0x73; }  // 's'
+    else if (key_code == 0x2C) { ascii_code = 0x74; }  // 't'
+    else if (key_code == 0x3C) { ascii_code = 0x75; }  // 'u'
+    else if (key_code == 0x2A) { ascii_code = 0x76; }  // 'v'
+    else if (key_code == 0x1D) { ascii_code = 0x77; }  // 'w'
+    else if (key_code == 0x22) { ascii_code = 0x78; }  // 'x'
+    else if (key_code == 0x35) { ascii_code = 0x79; }  // 'y'
+    else if (key_code == 0x1A) { ascii_code = 0x7A; }  // 'z'
+    else if (key_code == 0x45) { ascii_code = 0x30; }  // '0'
+    else if (key_code == 0x16) { ascii_code = 0x31; }  // '1'
+    else if (key_code == 0x1E) { ascii_code = 0x32; }  // '2'
+    else if (key_code == 0x26) { ascii_code = 0x33; }  // '3'
+    else if (key_code == 0x25) { ascii_code = 0x34; }  // '4'
+    else if (key_code == 0x2E) { ascii_code = 0x35; }  // '5'
+    else if (key_code == 0x36) { ascii_code = 0x36; }  // '6'
+    else if (key_code == 0x3D) { ascii_code = 0x37; }  // '7'
+    else if (key_code == 0x3E) { ascii_code = 0x38; }  // '8'
+    else if (key_code == 0x46) { ascii_code = 0x39; }  // '9'
+    else if (key_code == 0x49) { ascii_code = 0x2E; }  // '.'
+    else if (key_code == 0x4A) { ascii_code = 0x2F; }  // '/'
+    else if (key_code == 0x0E) { ascii_code = 0x60; }  // '`'
+    else if (key_code == 0x4E) { ascii_code = 0x2D; }  // '-'
+    else if (key_code == 0x55) { ascii_code = 0x3D; }  // '='
+    else if (key_code == 0x79) { ascii_code = 0x2B; }  // '+' num key
+
+    return ascii_code;
 }
 
 
