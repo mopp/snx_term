@@ -564,7 +564,7 @@ void main()
             execute(&input_buffer);
 
             buf_idx = 0;
-        } else if ((input_char == 0x08) && (0 < buf_idx)) {
+        } else if ((input_char == 0x5C) && (0 < buf_idx)) {
             // Backspace.
             buf_idx--;
         } else {
