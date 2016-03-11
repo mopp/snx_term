@@ -9,9 +9,9 @@ int TEST_STR_MSG[7];
 int CMD_PRINT[6];
 int CMD_NONE[18];
 int tmp_buffer[256];
-int in_buffer[2400];
+int input_buffer[512];
 
-BUFFER_SIZE = 2400;
+BUFFER_SIZE = 512;
 
 START_MSG[0] = 0x53;
 START_MSG[1] = 0x54;
@@ -337,7 +337,7 @@ int evaluate_expression(ptr_eval)
 }
 
 
-int execute(buf_ptr, cmd_ptr)
+int execute(cmd_ptr)
 {
     int arg_ptr;
     int result;
@@ -392,12 +392,12 @@ void do_tests()
 
 void main()
 {
-    int in_buf_idx;
+    int buf_idx;
     int input_char;
     int buf;
 
-    in_buffer[BUFFER_SIZE] = 0x00;
-    in_buf_idx = 0;
+    input_buffer[BUFFER_SIZE] = 0x00;
+    buf_idx = 0;
 
     // Initialize.
     led_set(0x00, 0xFF);
@@ -424,21 +424,20 @@ void main()
 
         if (input_char == 0x0A) {
             // Newline.
-            in_buffer[in_buf_idx] = 0x00;
-            buf = (&in_buffer + prev_tail_idx);
-            execute(&in_buffer, buf);
+            input_buffer[buf_idx] = 0x00;
+            execute(&input_buffer);
 
-            in_buf_idx = 0;
-        } else if ((input_char == 0x08) && (0 < in_buf_idx)) {
+            buf_idx = 0;
+        } else if ((input_char == 0x08) && (0 < buf_idx)) {
             // Backspace.
-            in_buf_idx--;
+            buf_idx--;
         } else {
-            in_buffer[in_buf_idx] = input_char;
-            in_buf_idx++;
+            input_buffer[buf_idx] = input_char;
+            buf_idx++;
         }
 
-        if (in_buf_idx == BUFFER_SIZE) {
-            in_buf_idx = 0;
+        if (buf_idx == BUFFER_SIZE) {
+            buf_idx = 0;
         }
     }
 }
