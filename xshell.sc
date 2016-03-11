@@ -485,8 +485,6 @@ int execute(cmd_ptr)
     } else if(strncmp(cmd_ptr, &CMD_OMIKUJI, 7) == 0){
         exe_omikuji();
     } else {
-        trim_spaces(cmd_ptr);
-        println_str(cmd_ptr);
         println_str(&CMD_NONE);
     }
 
