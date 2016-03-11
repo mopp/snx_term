@@ -143,7 +143,7 @@ void clear()
 
 void putchar(ch)
 {
-    vga_putchar(ch);
+    lcd_putchar(ch);
 }
 
 
@@ -333,14 +333,14 @@ int evaluate_expression(ptr_eval)
     // '+' -> 0x2B
     // '-' -> 0x2D
     // '/' -> 0x2F
-    if (is_variable_char(*ptr_eval) == 1 && 1 < strlen(ptr_eval)) {
+    if ((is_variable_char(*ptr_eval) == 1) && (*(ptr_eval + 1) == 0x20)) {
         state = STATE_VAR_ASSIGN;
         ptr_eval = ptr_eval + 2;
-    } else if (has_arithmetic_ops(ptr_eval) != 0 || is_number_str(ptr_eval) == 1) {
+    } else if ((has_arithmetic_ops(ptr_eval) != 0) || (is_number_str(ptr_eval) == 1)) {
         state = STATE_ARITHMETIC;
     }
 
-    if (state == STATE_ARITHMETIC || state == STATE_VAR_ASSIGN) {
+    if ((state == STATE_ARITHMETIC) || (state == STATE_VAR_ASSIGN)) {
         trim_spaces(ptr_eval);
 
         result_value = 0;
@@ -417,7 +417,9 @@ int evaluate_expression(ptr_eval)
     return result_value;
 }
 
+
 #include "cmd_omikuji.sc"
+
 
 int execute(cmd_ptr)
 {
