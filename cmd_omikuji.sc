@@ -1,4 +1,4 @@
-SEED        = 10;
+SEED = 10;
 
 DAIKICHI[0] = 0x44;
 DAIKICHI[1] = 0x41;
@@ -32,26 +32,26 @@ SHOKICHI[8] = 0x00;
 
 rand_seed = SEED;
 
-int rand3(){
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed>>1));
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed<<1));
-    rand_seed = 0x00FF & xor(rand_seed, (rand_seed>>2));
+int rand3()
+{
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed >> 1));
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed << 1));
+    rand_seed = 0x00FF & xor(rand_seed, (rand_seed >> 2));
     return modulo(rand_seed, 3);
 }
 
-int exe_omikuji(){
+int exe_omikuji()
+{
     int omikuji_result;
     omikuji_result = rand3();
 
-    if(omikuji_result == 0){
+    if (omikuji_result == 0) {
         change_color(0xD000);
         println_str(&DAIKICHI);
-    }
-    else if(omikuji_result == 1){
+    } else if (omikuji_result == 1) {
         change_color(0xE000);
         println_str(&CHUKICHI);
-    }
-    else if(omikuji_result == 2){
+    } else if (omikuji_result == 2) {
         change_color(0xB000);
         println_str(&SHOKICHI);
     }
