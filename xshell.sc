@@ -3,20 +3,24 @@
 
 // ==================== Global variables ====================
 int START_MSG[6];
-int TEST_STR1[6];
-int TEST_STR2[5];
-int TEST_STR_MSG[7];
 int CMD_PRINT[6];
 int CMD_OMIKUJI[8];
 int DAIKICHI[9];
 int CHUKICHI[9];
 int SHOKICHI[9];
 int CMD_NONE[18];
+int CMD_LET[4];
+int VARIABLES[5];
 int tmp_buffer[256];
 int input_buffer[512];
 
 BUFFER_SIZE = 512;
 SEED        = 10;
+
+CMD_LET[0] = 0x4c;
+CMD_LET[1] = 0x45;
+CMD_LET[2] = 0x54;
+CMD_LET[3] = 0x00;
 
 START_MSG[0] = 0x53;
 START_MSG[1] = 0x54;
@@ -24,26 +28,6 @@ START_MSG[2] = 0x41;
 START_MSG[3] = 0x52;
 START_MSG[4] = 0x54;
 START_MSG[5] = 0x00;
-
-TEST_STR1[0] = 0x48;
-TEST_STR1[1] = 0x45;
-TEST_STR1[2] = 0x4C;
-TEST_STR1[3] = 0x4C;
-TEST_STR1[4] = 0x4F;
-TEST_STR1[5] = 0x00;
-
-TEST_STR2[0] = 0x31;
-TEST_STR2[1] = 0x32;
-TEST_STR2[2] = 0x33;
-TEST_STR2[3] = 0x00;
-
-TEST_STR_MSG[0] = 0x46;
-TEST_STR_MSG[1] = 0x41;
-TEST_STR_MSG[2] = 0x49;
-TEST_STR_MSG[3] = 0x4c;
-TEST_STR_MSG[4] = 0x45;
-TEST_STR_MSG[5] = 0x44;
-TEST_STR_MSG[6] = 0x00;
 
 CMD_PRINT[0] = 0x50;
 CMD_PRINT[1] = 0x52;
@@ -364,6 +348,7 @@ int evaluate_expression(ptr_eval)
     int STATE_ARITHMETIC;
 
     STATE_ARITHMETIC = 1;
+    STATE_NUMBER     = 2;
     state            = 0;
     result_value     = 0;
 
@@ -373,6 +358,9 @@ int evaluate_expression(ptr_eval)
     // '/' -> 0x2F
     if (has_arithmetic_ops(ptr_eval) != 0) {
         state = STATE_ARITHMETIC;
+    } else if (2 < strlen(ptr_eval) && is_number_str(ptr_eval + 2) == 1) {
+        state = STATE_NUMBER;
+        ptr_eval + 2;
     }
 
     if (state == STATE_ARITHMETIC) {
@@ -438,12 +426,20 @@ int evaluate_expression(ptr_eval)
 
         is_arithmetic = 1;
     } else {
-        println_str(ptr_eval);
-        is_arithmetic = 0;
+        if (strlen(ptr_eval) == 1) {
+            val_tmp = *ptr_eval;
+            if ((0x41 <= val_tmp) && (val_tmp <= 0x5A)) {
+                println_num(VARIABLES[val_tmp - 0x41]);
+            }
+        } else {
+            println_str(ptr_eval);
+            is_arithmetic = 0;
+        }
     }
 
     return result_value;
 }
+
 
 
 int rand3()
@@ -483,6 +479,9 @@ int execute(cmd_ptr)
         if (is_arithmetic == 1) {
             println_num(result);
         }
+    } else if(strncmp(cmd_ptr, &CMD_LET, 3) == 0){
+        arg_ptr = cmd_ptr + 6;
+        VARIABLES[*(cmd_ptr + 4) - 0x41] = atoi(cmd_ptr + 6);
     } else if(strncmp(cmd_ptr, &CMD_OMIKUJI, 7) == 0){
         exe_omikuji();
     } else {
@@ -490,39 +489,6 @@ int execute(cmd_ptr)
     }
 
     return 1;
-}
-
-
-void do_tests()
-{
-    int cnt;
-
-    cnt = 0;
-    cnt = cnt + test_eq(strcmp(&TEST_STR1, &TEST_STR1), 0);
-    cnt = cnt + test_neq(strcmp(&TEST_STR1, &TEST_STR_MSG), 0);
-    cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 1), 0);
-    cnt = cnt + test_eq(strncmp(&TEST_STR1, &TEST_STR1, 2), 0);
-    cnt = cnt + test_neq(strncmp(&TEST_STR1, &TEST_STR_MSG, 2), 0);
-    cnt = cnt + test_eq(strlen(&TEST_STR1), 5);
-    cnt = cnt + test_eq(strlen(&START_MSG), 5);
-    cnt = cnt + test_eq(atoi(&TEST_STR2), 123);
-    cnt = cnt + test_eq(is_number_str(&TEST_STR2), 1);
-    cnt = cnt + test_eq(is_number_str(&TEST_STR_MSG), 0);
-    cnt = cnt + test_eq(strchr(&TEST_STR2, 0x31), (&TEST_STR2));
-    cnt = cnt + test_eq(strchr(&TEST_STR2, 0x32), (&TEST_STR2 + 1));
-    cnt = cnt + test_eq(modulo(10, 2), 0);
-    cnt = cnt + test_eq(modulo(10, 3), 1);
-    cnt = cnt + test_eq(modulo(200, 7), 4);
-    cnt = cnt + test_eq(div(4, 4), 1);
-    cnt = cnt + test_eq(div(12, 4), 3);
-    cnt = cnt + test_eq(div(45, 5), 9);
-
-    if (cnt != 0) {
-        clear();
-        print_str(&TEST_STR_MSG);
-
-        halt;
-    }
 }
 
 
@@ -580,7 +546,6 @@ void main()
 
 
 // ==================== Main routine ====================
-do_tests();
 while (1) {
     main();
 }
